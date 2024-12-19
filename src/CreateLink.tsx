@@ -1,17 +1,24 @@
 import { useState } from "react";
-
+import axios from "axios";
 export let urls: Map<string, string> = new Map(); //TODO - notice the type definition
 export let counterForUrl: Map<string, number> = new Map(); //will store the url counter
 // export let v: number[] = [];
 // v.push(2);
 function CreateLink() {
-  const [url, setUrl] = useState("");
+  const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrl, setShortUrl] = useState<string | null>(null);
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const shortenedLink = linkShortnerEngine(url); //call the fxn with the url (store in use state);
-    setShortUrl(shortenedLink);
-    console.log(urls);
+    const shortenedUrl = linkShortnerEngine(originalUrl); //call the fxn with the url (store in use state);
+    setShortUrl(shortenedUrl);
+    const response = await axios.post(
+      "http://localhost:8080/createshortlinks",
+      {
+        shortenedUrl: shortenedUrl,
+        originalUrl: originalUrl,
+      }
+    );
+    console.log(response);
   };
 
   return (
@@ -19,7 +26,7 @@ function CreateLink() {
       <form className="form" onSubmit={handleSubmit}>
         <input
           className="url-input"
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e) => setOriginalUrl(e.target.value)}
         ></input>
         <button className="submit-button" type="submit">
           {" "}
@@ -39,7 +46,6 @@ function CreateLink() {
 const linkShortnerEngine = (url: string) => {
   const shortenedUrl = "localhost:5173/dub/" + Date.now();
   urls.set(shortenedUrl, url);
-  console.log(urls);
   return shortenedUrl;
 };
 

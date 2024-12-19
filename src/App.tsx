@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import UrlRedirect from "./UrlRedirect";
+import UrlRedirect from "./components/UrlRedirect";
 import "./App.css";
 import {
   BrowserRouter as Router,
