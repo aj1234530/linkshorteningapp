@@ -16,16 +16,10 @@ app.post("/createshortlinks", async (req, res) => {
     }: { shortenedUrl: string; originalUrl: any } = req.body;
 
     console.log(req.body, "received from the body"); //
-
-    //set to the redis and then in get link fetch from the redis
     await redisClient.hSet(`urls:/dub/${shortenedUrl}`, {
       link: originalUrl,
       clicks: 0,
     });
-    // const url = await prisma.url.create({
-    //   data: { shortenedUrl: shortenedUrl, originalUrl: originalUrl },
-    // });
-    // console.log(url);
     res.status(200).json({
       message: "link shortened",
       shortenedUrl: `localhost:5173/dub/${shortenedUrl}`,
@@ -44,23 +38,6 @@ app.post("/getoriginallink", async (req, res) => {
     const originalUrl = await redisClient.hGet(`urls:${shortenedUrl}`, "link");
     await redisClient.hIncrBy(`url:${shortenedUrl}`, "clicks", 1);
     console.log(originalUrl);
-    //commented out the prisma logic
-    // const urlobject = await prisma.url.findFirst({
-    //   where: { shortenedUrl: shortenedUrl },
-    // });
-    //increase the counter
-    // if (urlobject) {
-    //   await prisma.url.update({
-    //     where: { id: urlobject.id },
-    //     data: {
-    //       counter: {
-    //         increment: 1, //
-    //       },
-    //     },
-    //   });
-    //   console.log(shortenedUrl, urlobject);
-    // }
-    // res.status(200).json({ originalUrl: urlobject?.originalUrl });
     res.status(200).json({ originalUrl: originalUrl });
   } catch (error) {
     console.log(error);
