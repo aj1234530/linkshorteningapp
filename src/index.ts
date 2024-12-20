@@ -1,4 +1,5 @@
 import express from "express";
+import { redisClient } from "./redisClient"; //redis client import()
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import cors from "cors";
@@ -9,8 +10,17 @@ app.use(cors());
 app.post("/createshortlinks", async (req, res) => {
   try {
     console.log("hello");
-    const { shortenedUrl, originalUrl } = req.body;
+    const {
+      shortenedUrl,
+      originalUrl,
+    }: { shortenedUrl: string; originalUrl: string } = req.body;
+    //get the unique thing form shortened url(localhost:3000/dub/12345678)
     console.log(req.body);
+    //set to the redis and then in get link fetch from the redis
+    redisClient.hSet(`urls:${shortenedUrl}`, {
+      link: originalUrl,
+      clicks: 0,
+    });
     const url = await prisma.url.create({
       data: { shortenedUrl: shortenedUrl, originalUrl: originalUrl },
     });
@@ -22,12 +32,28 @@ app.post("/createshortlinks", async (req, res) => {
   }
 });
 
-app.get("/getoriginallink", async (req, res) => {
+app.post("/getoriginallink", async (req, res) => {
   try {
     const { shortenedUrl } = req.body;
+    // prisma.$transaction({}) - to avoid use the race condition(multiple requests) use the atomic transaction
+    //retrieving from the redis
+    // redisClient.hGet()
     const urlobject = await prisma.url.findFirst({
       where: { shortenedUrl: shortenedUrl },
     });
+    //increase the counter
+    if (urlobject) {
+      await prisma.url.update({
+        where: { id: urlobject.id },
+        data: {
+          counter: {
+            increment: 1, //look at this syntax we can use increment
+          },
+        },
+      });
+    }
+
+    console.log(shortenedUrl, urlobject);
     res.status(200).json({ originalUrl: urlobject?.originalUrl });
   } catch (error) {
     console.log(error);
