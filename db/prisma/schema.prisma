@@ -13,9 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  email    String @unique
+  password String @unique
+  urls     Url[] //the list can be empty also
+}
+
 model Url {
-  id           String @id @default(cuid())
-  shortenedUrl String
-  originalUrl  String
-  counter      Int    @default(0)
+  id                     String @id @default(cuid())
+  userId                 String //1-m relation so, not unique userId
+  shortenedUrlUniqueSlug String
+  originalUrl            String
+  clicksCount            Int    @default(0) //will be update by the redis data in batches, still to be figured out how
+  user                   User   @relation(fields: [userId], references: [id])
 }

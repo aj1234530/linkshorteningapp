@@ -1,48 +1,36 @@
 import express from "express";
-import { redisClient } from "./redisClient"; //redis client import()
+import dotenv from "dotenv";
+dotenv.config();
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient(); //prisma exported to be used in another modules
 import cors from "cors";
+import { authRouter } from "./routes/authRoutes";
+import { linkRouter } from "./routes/linksRoutes";
+import { authSessionMiddleware } from "./middlewares/authMiddleware";
 const app = express();
-
+export const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
-app.post("/createshortlinks", async (req, res) => {
-  try {
-    console.log("hello");
-    const {
-      shortenedUrl,
-      originalUrl,
-    }: { shortenedUrl: string; originalUrl: any } = req.body;
 
-    console.log(req.body, "received from the body"); //
-    await redisClient.hSet(`urls:/dub/${shortenedUrl}`, {
-      link: originalUrl,
-      clicks: 0,
-    });
-    res.status(200).json({
-      message: "link shortened",
-      shortenedUrl: `localhost:5173/dub/${shortenedUrl}`,
-    });
-  } catch (error: any) {
-    console.log(error.message);
-    res.status(500).json({ message: "server error" });
-  }
+app.get("/ping", (req, res) => {
+  res.send("pong");
 });
 
-app.post("/getoriginallink", async (req, res) => {
-  try {
-    const { shortenedUrl } = req.body;
-    console.log(shortenedUrl, "fafsffsffdsfsd"); //check the data received
-    // //redis logic to get the original link
-    const originalUrl = await redisClient.hGet(`urls:${shortenedUrl}`, "link");
-    await redisClient.hIncrBy(`url:${shortenedUrl}`, "clicks", 1);
-    console.log(originalUrl);
-    res.status(200).json({ originalUrl: originalUrl });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "server error encountered" });
-  }
+// basic middleware for logging every request , first request pass throught this and then to any other api below it (event auths one (why - as the before authMiddlware this middle is there))
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log("Body:", req.body);
+  console.log("Headers:", req.headers);
+  next();
 });
 
-app.listen(8080);
+app.get("/ping/ping", authSessionMiddleware, (req, res) => {
+  res.send("pong pong");
+});
+
+//debugging middleware
+app.use("/api/v1/auth", authRouter);
+
+app.use("/api/v1/user", linkRouter);
+
+app.listen(PORT);
