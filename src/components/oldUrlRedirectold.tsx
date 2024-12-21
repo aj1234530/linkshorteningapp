@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { urls, counterForUrl } from "../CreateLink";
+import { urls } from "../CreateLink";
 import axios from "axios";
 function UrlRedirect() {
   console.log(urls); //why map is becoming reset in this call
