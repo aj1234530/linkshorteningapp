@@ -12,7 +12,7 @@ function CreateLink() {
     const shortenedUrl = linkShortnerEngine(originalUrl); //call the fxn with the url (store in use state);
     setShortUrl(shortenedUrl);
     const response = await axios.post(
-      "http://localhost:8080/createshortlinks",
+      "http://localhost:8080/createshortlinks", //backend route changing  -- change here also
       {
         shortenedUrl: shortenedUrl,
         originalUrl: originalUrl,
