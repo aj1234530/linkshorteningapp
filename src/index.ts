@@ -10,7 +10,9 @@ import { authSessionMiddleware } from "./middlewares/authMiddleware";
 const app = express();
 export const PORT = process.env.PORT || 3001;
 app.use(express.json());
+
 app.use(cors());
+// enable pre-flight request for DELETE request
 
 app.get("/ping", (req, res) => {
   res.send("pong");
@@ -28,9 +30,11 @@ app.get("/ping/ping", authSessionMiddleware, (req, res) => {
   res.send("pong pong");
 });
 
-//debugging middleware
 app.use("/api/v1/auth", authRouter);
 
+//catch all routes for , for invalid paths
 app.use("/api/v1/user", linkRouter);
-
+app.use(function (req, res) {
+  res.status(400).json({ message: "Page Not Found" });
+});
 app.listen(PORT);

@@ -35,10 +35,14 @@ export const sigupController = async (req: Request, res: Response) => {
       data: { username: username, email: email, password: hashedPassword },
     }); //creating acc in db
     const id = user.id;
-    const token = jwt.sign({ id: id }, JWT_SECRET, { expiresIn: "48h" });
-    res
-      .status(200)
-      .json({ message: "your are now signued up with us", token: token });
+    const token = jwt.sign({ id: id, username: user.username }, JWT_SECRET, {
+      expiresIn: "48h",
+    });
+    res.status(200).json({
+      message: "your are now signued up with us",
+      token: token,
+      username: username,
+    });
   } catch (error) {
     console.log(error);
     res
@@ -67,8 +71,16 @@ export const loginController = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Wrong Password, please retry" });
       return;
     }
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "48h" });
-    res.status(200).json({ message: "Login successful", token: token });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      JWT_SECRET,
+      { expiresIn: "48h" }
+    );
+    res.status(200).json({
+      message: "Login successful",
+      token: token,
+      username: user.username, //setting username for setting dynamic /ak1/dashboard(not tested yet)
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
