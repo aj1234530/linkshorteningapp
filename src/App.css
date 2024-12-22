@@ -135,5 +135,19 @@
   gap:10px;
   margin: 10px 0 10px 0;
   background-color: rgb(229, 221, 206);
-  width: 40%;
+  
+}
+.short-link-input-output{
+  display: inline;
+  gap: 10px;
+}
+
+.form-modal{
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
 }

@@ -2,15 +2,15 @@ import { useState } from "react";
 import "../App.css";
 import { Link } from "react-router-dom";
 
-function Navbar() {
+function NavbarForLogged() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <div className="navbar">
-      <div className="navbar-container">
+    <div className="Navbar">
+      <div className="Navbar-container">
         <svg
           width="65"
           height="64"
@@ -36,27 +36,13 @@ function Navbar() {
         {/* Menu */}
         <div className={`menu ${isMenuOpen ? "show" : ""}`}>
           <ul>
-            <li>Product</li>
-            <li>Resources</li>
-            <li>Enterprise</li>
-            <li>Customers</li>
-            <Link to="/dashboard">
-              {" "}
-              <li>Dashboard</li>
-            </Link>
+            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/">Create New Link</Link>
           </ul>
-        </div>
-        <div className="login-signup-buttons">
-          <Link to="/login">
-            <button>Log in</button>
-          </Link>
-          <Link to="/signup">
-            <button>Sign up</button>
-          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default Navbar;
+export default NavbarForLogged;

@@ -35,7 +35,7 @@ function UrlRedirectnew() {
   }, []);
   return (
     <>
-      <div>URL NOT Valid</div>
+      <div>Redirecting Please Wait</div>
     </>
   );
 }

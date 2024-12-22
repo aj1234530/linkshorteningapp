@@ -5,7 +5,7 @@ function Root() {
   const [showLink, setShowLink] = useState(false);
   const [linkInput, setLinkInput] = useState<null | string>(null);
   const handleClick = () => {
-    setShowLink((prev) => !prev);
+    setShowLink(true);
   };
   return (
     <div>
@@ -26,9 +26,10 @@ function Root() {
             {/* <button onClick={<CreateShortLink longLink="linkInput" />}>Short Now</button>  we can't do this but we can maintain a state var if ture we can run it*/}
             <button onClick={handleClick}>Short Now</button>
             <div className="root-page-short-link-area">
-              Your Short Link :
-              {showLink && <CreateShortLink longLink={linkInput} />}
-              {showLink && <div>true</div>}
+              <div>
+                Your Short Link :{" "}
+                {showLink && <CreateShortLink longLink={linkInput} />}
+              </div>
             </div>
           </div>
           <div>Want to claim your links, edit,or view their analytics</div>

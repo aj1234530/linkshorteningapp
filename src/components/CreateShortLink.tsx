@@ -10,6 +10,9 @@ function CreateShortLink({ longLink }: { longLink: string | null }) {
         "http://localhost:3001/api/v1/user/createshortlinks",
         {
           originalUrlFromBody: longLink,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
       setshortenedLink(response.data.shortenedUrl);
@@ -22,7 +25,7 @@ function CreateShortLink({ longLink }: { longLink: string | null }) {
     return () => setshortenedLink(null); //setting the shortened link to null on unmounting
   }, []);
   return (
-    <div>
+    <div className="short-link-input-output">
       <p>{shortenedLink}</p>
     </div>
   );
