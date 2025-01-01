@@ -28,4 +28,11 @@ model Url {
   originalUrl            String
   clicksCount            Int    @default(0) //will be update by the redis data in batches, still to be figured out how
   user                   User   @relation(fields: [userId], references: [id])
+  tags String[]
+  comments String
 }
+
+
+
+
+

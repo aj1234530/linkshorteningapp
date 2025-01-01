@@ -12,7 +12,6 @@ export const PORT = process.env.PORT || 3001;
 app.use(express.json());
 
 app.use(cors());
-// enable pre-flight request for DELETE request
 
 app.get("/ping", (req, res) => {
   res.send("pong");

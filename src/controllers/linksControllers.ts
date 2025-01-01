@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, urlencoded } from "express";
 import { redisClient } from "../redisClient";
 const BASE_URL = process.env.BASE_URL || "localhost";
 import { PORT, prisma } from "..";
@@ -23,7 +23,8 @@ const uniqueSlugGenerator = (originalUrlFromBody: string) => {
 
 export const createShortLinks = async (req: Request, res: Response) => {
   try {
-    const originalUrlFromBody: string = req.body.originalUrl;
+    const originalUrlFromBody = req.body.originalUrlFromBody;
+    console.log(originalUrlFromBody, typeof originalUrlFromBody);
     //using ternary operator to prefix with https if neither it starts with https nor with http
     const originalUrlPrefixedWithHttpOrHttps =
       !originalUrlFromBody.startsWith("http://") &&
@@ -46,7 +47,7 @@ export const createShortLinks = async (req: Request, res: Response) => {
         shortenedUrlUniqueSlug: `${shortenedUrlSlug}`, //parsing to string as used Date.now() - only saving the unique slug
       },
     });
-    const shortenedUrl = `${BASE_URL}:${PORT}/${shortenedUrlSlug}`; //composing the short url to return
+    const shortenedUrl = `${BASE_URL}:${PORT}/user/${shortenedUrlSlug}`; //composing the short url to return
     res
       .status(200)
       .json({ message: "URL CREATED", shortenedUrl: shortenedUrl });
@@ -98,4 +99,16 @@ export const getoriginalLink = async (req: Request, res: Response) => {
   }
 };
 
-//testing res.reidrect without auth at /api/v1/user/redirect
+export const getAllLinksOfAUser = async (req: Request, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { urls: true },
+    });
+    const allLinks = user?.urls;
+    res.status(200).json({ urlsArray: allLinks });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
